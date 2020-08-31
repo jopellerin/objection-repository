@@ -60,4 +60,8 @@ class Repository implements RepositoryInterface {
   }
 }
 
-export default Repository;
+const repositoryFactory = (Model) => (
+  new Repository(Model)
+);
+
+export default repositoryFactory;
