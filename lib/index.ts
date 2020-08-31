@@ -1,2 +1,5 @@
+import repositoryFactory from './repository';
+
 export * from './errors';
-export * from './repository';
+
+export { repositoryFactory };
