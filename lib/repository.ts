@@ -54,9 +54,12 @@ class Repository implements RepositoryInterface {
       .insert(data);
   }
 
-  update(data, { trx = null }): Promise<void> {
+  update(id, data, { trx = null }): Promise<void> {
     return this.Model.query(trx)
-      .update(data);
+      .update({
+        ...data,
+        id,
+      });
   }
 }
 
