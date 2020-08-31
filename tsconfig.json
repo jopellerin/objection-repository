@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "types": ["core-js" ,"node"],
+    "esModuleInterop": true
+  }
+}
