@@ -20,7 +20,7 @@ class Repository implements RepositoryInterface {
     });
   }
 
-  find(cond, columns = []): Promise<Object[]> {
+  find<T>(cond, columns = []): Promise<T[]> {
     const query = this.Model.query()
       .where(cond);
 
@@ -31,15 +31,19 @@ class Repository implements RepositoryInterface {
     return query;
   }
 
-  get(id, column = null) {
+  get<T extends Object>(id, idColumn = null, columns = []): Promise<T> {
     return new Promise(async (resolve, reject) => {
-      let model;
-      const useColumn = column || this.idColumn;
-
-      model = await this.Model.query()
+      const useColumn = idColumn || this.idColumn;
+      const query = this.Model.query()
         .findOne({
           [useColumn]: id,
         });
+
+      if (columns) {
+        query.columns(columns);
+      }
+
+      const model = await query;
 
       if (!model) {
         reject(entityNotFoundError(id, useColumn));
