@@ -1,5 +1,5 @@
-import { entityNotFoundError } from './errors/entity-not-found';
-import { RepositoryInterface } from '../types/repository';
+import { entityNotFoundError } from './errors';
+import {FindOptionsInterface, GetOptionsInterface, RepositoryInterface} from '../types/repository';
 
 class Repository implements RepositoryInterface {
   readonly idColumn: string;
@@ -20,7 +20,8 @@ class Repository implements RepositoryInterface {
     });
   }
 
-  find<T>(cond, columns = []): Promise<T[]> {
+  find<T>(cond, options: FindOptionsInterface): Promise<T[]> {
+    const { columns, onQuery } = options;
     const query = this.Model.query()
       .where(cond);
 
@@ -28,10 +29,30 @@ class Repository implements RepositoryInterface {
       query.columns(columns);
     }
 
+    if (onQuery) {
+      onQuery(query);
+    }
+
     return query;
   }
 
-  get<T extends Object>(id, idColumn = null, columns = []): Promise<T> {
+  get<T extends Object>(id, idColumn = null): Promise<T>;
+  get<T extends Object>(id, options: GetOptionsInterface = {}): Promise<T> {
+    let parsedOptions: GetOptionsInterface = {};
+    if (typeof options === 'string') {
+      parsedOptions = {
+        idColumn: options,
+      };
+    } else {
+      parsedOptions = options;
+    }
+
+    const {
+      columns = [],
+      idColumn = null,
+      onQuery = null,
+    } = parsedOptions;
+
     return new Promise(async (resolve, reject) => {
       const useColumn = idColumn || this.idColumn;
       const query = this.Model.query()
@@ -41,6 +62,10 @@ class Repository implements RepositoryInterface {
 
       if (columns) {
         query.columns(columns);
+      }
+
+      if (onQuery) {
+        onQuery(query);
       }
 
       const model = await query;
