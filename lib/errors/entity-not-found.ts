@@ -6,7 +6,7 @@ export function EntityNotFoundError({ message, stack }: Error): void {
 }
 EntityNotFoundError.prototype = Error.prototype;
 
-export function entityNotFoundError(id, column): Error {
-  const error = new Error(`Entity with "${column}" of "${id}" was not found`);
+export function entityNotFoundError(modelName, id, column): Error {
+  const error = new Error(`"${modelName}" entity with "${column}" of "${id}" was not found`);
   return new EntityNotFoundError(error);
 }

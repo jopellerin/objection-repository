@@ -71,7 +71,7 @@ class Repository implements RepositoryInterface {
       const model = await query;
 
       if (!model) {
-        reject(entityNotFoundError(id, useColumn));
+        reject(entityNotFoundError(this.Model.tableName, id, useColumn));
       }
 
       resolve(model);
